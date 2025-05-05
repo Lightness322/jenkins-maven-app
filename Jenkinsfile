@@ -1,36 +1,27 @@
 pipeline {
     agent any
-    parameters {
-        choice(name: 'VERSION', choices: ['1.1.0', '1.1.2'], description: '')
-        booleanParam(name: 'executeTests', defaultValue: true, description: '')
-    }
-    environment {
-        NEW_VERSION = '1.3.0'
-    }
     tools {
-        maven "maven-3.9"
+        maven 'maven-3.9'
     }
     stages {
-        stage('build') {
+        stage('build jar') {
             steps {
-                echo 'building app'
-                echo "building version ${NEW_VERSION}"
+                sh 'mvn package'
             }
         }
-        stage('tests') {
-            when {
-                expression {
-                    params.executeTests
-                }
-            }
+        stage('build image') {
             steps {
-                echo 'testing app'
+                sh 'mvn package'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    sh 'docker build -t lightness322/demo-app:jma-2.0 .'
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push lightness322/demo-app:jma-2.0'
+                }
             }
         }
         stage('deploy') {
             steps {
-                echo "deploying with version param ${params.VERSION}"
-                echo 'deploying app'
+                sh 'echo deploying'
             }
         }
     }
