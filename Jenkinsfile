@@ -6,7 +6,6 @@ pipeline {
     }
     environment {
         NEW_VERSION = '1.3.0'
-        SERVER_CREDENTIALS = credentials('server-credentials')
     }
     tools {
         maven "maven-3.9"
@@ -27,8 +26,6 @@ pipeline {
             steps {
                 echo "deploying with version param ${params.VERSION}"
                 echo 'deploying app'
-                echo "deploy with ${SERVER_CREDENTIALS}"
-                sh "${SERVER_CREDENTIALS}"
             }
         }
     }
