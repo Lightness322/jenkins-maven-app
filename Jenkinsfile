@@ -23,7 +23,7 @@ pipeline {
                 echo 'testing app'
             }
         }
-        stage('build') {
+        stage('deploy') {
             steps {
                 echo "deploying with version param ${params.VERSION}"
                 echo 'deploying app'
